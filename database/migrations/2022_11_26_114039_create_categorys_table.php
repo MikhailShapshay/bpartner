@@ -16,7 +16,7 @@ class CreateCategorysTable extends Migration
         if (!Schema::hasTable('categorys')) {
             Schema::create('categorys', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('parent_id'); // родительская категория
+                $table->unsignedBigInteger('parent_id')->default(0); // родительская категория
                 $table->string('title'); // наименование
                 $table->timestamps();
             });
