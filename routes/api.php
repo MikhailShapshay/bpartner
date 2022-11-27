@@ -28,6 +28,8 @@ Route::prefix('v1')->group(function (){
     Route::get('/categorys', [ApiController::class, 'categorys']);
     Route::post('/product', [ApiController::class, 'getProductBySlug']);
     Route::post('/get-product-by-filters', [ApiController::class, 'getProducts']);
+    Route::post('/add-property', [ApiController::class, 'addProperty']);
+    Route::post('/del-property', [ApiController::class, 'delProperty']);
 
     Route::group(['middleware' => 'auth:sanctum'], function (){
         Route::get('/user', [AuthController::class, 'user']);
