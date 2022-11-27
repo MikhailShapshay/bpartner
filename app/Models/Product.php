@@ -22,7 +22,7 @@ class Product extends Model
      * Связи
      */
 
-    public function propertys()
+    public function property()
     {
         return $this->hasMany(Property::class, 'product_id', 'id');
     }

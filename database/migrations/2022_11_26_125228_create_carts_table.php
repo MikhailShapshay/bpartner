@@ -16,13 +16,7 @@ class CreateCartsTable extends Migration
         if (!Schema::hasTable('carts')) {
             Schema::create('carts', function (Blueprint $table) {
                 $table->id();
-                $table->unsignedBigInteger('user_id'); // пользователь
-                $table->timestamps();
-                $table->foreign('user_id')
-                    ->references('id')
-                    ->on('users')
-                    ->onUpdate('cascade')
-                    ->onDelete('cascade'); // каскадный ключ
+                $table->unsignedBigInteger('user_id')->default(0); // пользователь
                 $table->timestamps();
             });
         }

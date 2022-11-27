@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCategorysTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreateCategorysTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('categorys')) {
-            Schema::create('categorys', function (Blueprint $table) {
+        if (!Schema::hasTable('categories')) {
+            Schema::create('categories', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('parent_id')->default(0); // родительская категория
                 $table->string('title'); // наименование
@@ -30,8 +30,8 @@ class CreateCategorysTable extends Migration
      */
     public function down()
     {
-        if (Schema::hasTable('categorys')) {
-            Schema::dropIfExists('categorys');
+        if (Schema::hasTable('categories')) {
+            Schema::dropIfExists('categories');
         }
     }
 }

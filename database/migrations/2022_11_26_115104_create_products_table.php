@@ -19,12 +19,12 @@ class CreateProductsTable extends Migration
                 $table->unsignedBigInteger('category_id'); // родительская категория
                 $table->string('title'); // наименование
                 $table->text('description'); // описание
-                $table->decimal('cost'); // цена
+                $table->float('cost'); // цена
                 $table->string('slug'); // slug
                 $table->timestamps();
                 $table->foreign('category_id')
                     ->references('id')
-                    ->on('categorys')
+                    ->on('categories')
                     ->onUpdate('cascade')
                     ->onDelete('cascade'); // каскадный ключ
             });

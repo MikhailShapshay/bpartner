@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePropertysTable extends Migration
+class CreatePropertiesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class CreatePropertysTable extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('propertys')) {
-            Schema::create('propertys', function (Blueprint $table) {
+        if (!Schema::hasTable('properties')) {
+            Schema::create('properties', function (Blueprint $table) {
                 $table->id();
                 $table->unsignedBigInteger('product_id'); // родительский товар
                 $table->string('title'); // наименование свойства
@@ -36,8 +36,8 @@ class CreatePropertysTable extends Migration
      */
     public function down()
     {
-        if (Schema::hasTable('propertys')) {
-            Schema::dropIfExists('propertys');
+        if (Schema::hasTable('properties')) {
+            Schema::dropIfExists('properties');
         }
     }
 }
