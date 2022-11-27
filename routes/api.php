@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\v1\ApiController;
 use App\Http\Controllers\Api\v1\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,6 +23,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('v1')->group(function (){
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/categorys', [ApiController::class, 'categorys']);
 
     Route::group(['middleware' => 'auth:sanctum'], function (){
         Route::get('/user', [AuthController::class, 'user']);
