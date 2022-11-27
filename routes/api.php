@@ -26,6 +26,8 @@ Route::prefix('v1')->group(function (){
     Route::post('/logout', [AuthController::class, 'logout']);
 
     Route::get('/categorys', [ApiController::class, 'categorys']);
+    Route::post('/product', [ApiController::class, 'getProductBySlug']);
+    Route::post('/get-product-by-filters', [ApiController::class, 'getProducts']);
 
     Route::group(['middleware' => 'auth:sanctum'], function (){
         Route::get('/user', [AuthController::class, 'user']);

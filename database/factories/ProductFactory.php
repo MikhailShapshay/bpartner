@@ -17,7 +17,7 @@ class ProductFactory extends Factory
         return [
             'title' => $this->faker->unique()->word(),
             'description' => $this->faker->unique()->realText($maxNbChars = 200, $indexSize = 2),
-            'cost' => $this->faker->randomFloat( 2, 1, 2),
+            'cost' => $this->faker->randomFloat( 2, 1, 5000),
             'slug' => Product::generateUniqueCode(),
         ];
     }
