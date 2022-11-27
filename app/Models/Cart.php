@@ -11,6 +11,10 @@ class Cart extends Model
 
     protected $fillable = [
         'user_id',
+        'name',
+        'email',
+        'phone',
+        'ses_id',
     ];
 
     /**
@@ -24,6 +28,6 @@ class Cart extends Model
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'order_id', 'id');
+        return $this->hasMany(Order::class, 'cart_id', 'id');
     }
 }

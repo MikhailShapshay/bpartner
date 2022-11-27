@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\Property;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -41,7 +42,7 @@ class ApiController extends Controller
             ->where('slug', "=",$data['slug'])
             ->first();
         if(!$product){
-            return response("Product not find!", 404);
+            return response("Product not found!", 404);
         }
 
         return response()->json(['product' => $product]);
@@ -91,7 +92,7 @@ class ApiController extends Controller
         ->get();
 
         if(!$products || $products->count() < 1){
-            return response("Product not find!", 404);
+            return response("Product not found!", 404);
         }
 
         return response()->json(['products' => $products]);
@@ -109,7 +110,7 @@ class ApiController extends Controller
             ->first();
 
         if(!$product){
-            return response("Product not find!", 404);
+            return response("Product not found!", 404);
         }
 
         Property::create([
@@ -137,7 +138,7 @@ class ApiController extends Controller
         $property = Property::where('id', "=", $data['property_id'])->first();
 
         if(!$property){
-            return response("Property not find!", 404);
+            return response("Property not found!", 404);
         }
 
         $product_id = $property->product_id;
@@ -158,10 +159,19 @@ class ApiController extends Controller
     public function addOrder(Request $request){
 
         if(auth()){
-            $name = $request->user()->name;
-            $email = $request->user()->email;
-            $phone = $request->user()->phone;
-            $user_id = $request->user()->id;
+            $data = $request->validate(
+                [
+                    'order.slug' => 'required|string',
+                    'order.quantity' => 'required|integer',
+                ]
+            );
+            $user = User::find($request->user()->id)->first();
+            $slug = $data['order']['slug'];
+            $quantity = $data['order']['quantity'];
+            $name = $user->name;
+            $email = $user->email;
+            $phone = $user->phone;
+            $user_id = $user->id;
             $ses_id = '';
         }
         else{
@@ -170,11 +180,15 @@ class ApiController extends Controller
                     'name' => 'required|string',
                     'email' => 'required|email',
                     'phone' => 'required|string',
+                    'order.slug' => 'required|string',
+                    'order.quantity' => 'required|integer',
                 ]
             );
             $name = $data['name'];
             $email = $data['email'];
             $phone = $data['phone'];
+            $slug = $data['order']['slug'];
+            $quantity = $data['order']['quantity'];
             $user_id = 0;
             if ($request->session()->has('ses_id')) {
                 $ses_id = $request->session()->get('ses_id');
@@ -186,10 +200,10 @@ class ApiController extends Controller
 
         }
 
-        $product = Product::where('slug', "=", $data['slug'])->first();
+        $product = Product::where('slug', "=", $slug)->first();
 
         if(!$product){
-            return response("Product not find!", 404);
+            return response("Product not found!", 404);
         }
 
         $cart = Cart::firstOrCreate([
@@ -203,9 +217,137 @@ class ApiController extends Controller
         $order = Order::create([
             'cart_id' => $cart->id,
             'product_id' => $product->id,
-            'quantity' => $data['title'],
+            'quantity' => $quantity,
         ]);
 
         return response()->json(['order' => $order]);
     }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function edtOrder(Request $request){
+        $data = $request->validate(
+            [
+                'order_id' => 'required|integer',
+                'quantity' => 'required|integer',
+            ]
+        );
+
+        if(auth()){
+            $user = User::find($request->user()->id)->first();
+            $user_id = $user->id;
+            $cart = Cart::where('user_id', "=", $user_id)->first();
+            if(!$cart)  return response("Order not found!", 404);
+       }
+        else{
+            if ($request->session()->has('ses_id')) {
+                $ses_id = $request->session()->get('ses_id');
+            }
+            else{
+                return response("Order not found!", 404);
+            }
+            $cart = Cart::where('order_id', "=", $data['order_id'])
+                ->where('ses_id', "=", $ses_id)
+                ->first();
+            if(!$cart)  return response("Order not found!", 404);
+            $user_id = $cart->user_id;
+        }
+
+        $order = Order::where('id', "=", $data['order_id'])
+            ->where('cart_id', "=", $cart->id)
+            ->first();
+
+        if(!$order){
+            return response("Order not found!", 404);
+        }
+
+        $order->update([
+            'quantity' => $data['quantity'],
+        ]);
+
+        $order->refresh();
+
+        return response()->json(['order' => $order]);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function delOrder(Request $request){
+        $data = $request->validate(
+            [
+                'order_id' => 'required|integer',
+            ]
+        );
+
+        if(auth()){
+            $user = User::find($request->user()->id)->first();
+            $user_id = $user->id;
+            $cart = Cart::where('user_id', "=", $user_id)->first();
+            if(!$cart)  return response("Order not found!", 404);
+        }
+        else{
+            if ($request->session()->has('ses_id')) {
+                $ses_id = $request->session()->get('ses_id');
+            }
+            else{
+                return response("Order not found!", 404);
+            }
+            $cart = Cart::where('order_id', "=", $data['order_id'])
+                ->where('ses_id', "=", $ses_id)
+                ->first();
+            if(!$cart)  return response("Order not found!", 404);
+            $user_id = $cart->user_id;
+        }
+
+        $order = Order::where('id', "=", $data['order_id'])
+            ->where('cart_id', "=", $cart->id)
+            ->first();
+
+        if(!$order){
+            return response("Order not found!", 404);
+        }
+
+        $order->delete();
+
+        return response()->json(['message' => 'Order deleted!']);
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function showCart(Request $request){
+         if(auth()){
+            $user = User::find($request->user()->id)->first();
+            $user_id = $user->id;
+            $cart = Cart::with('orders')
+                ->with('orders.products')
+                ->with('orders.products.property')
+                ->where('user_id', "=", $user_id)
+                ->first();
+
+        }
+        else{
+            if ($request->session()->has('ses_id')) {
+                $ses_id = $request->session()->get('ses_id');
+            }
+            else{
+                return response("Cart not found!", 404);
+            }
+            $cart = Cart::with('orders')
+                ->with('orders.products')
+                ->with('orders.products.property')
+                ->where('ses_id', "=", $ses_id)
+                ->first();
+        }
+
+        if(!$cart)  return response("Cart not found!", 404);
+
+        return response()->json(['cart' => $cart]);
+    }
+
 }

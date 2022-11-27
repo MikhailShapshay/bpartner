@@ -31,6 +31,11 @@ Route::prefix('v1')->group(function (){
     Route::post('/add-property', [ApiController::class, 'addProperty']);
     Route::post('/del-property', [ApiController::class, 'delProperty']);
 
+    Route::post('/add-order', [ApiController::class, 'addOrder']);
+    Route::post('/edit-order', [ApiController::class, 'edtOrder']);
+    Route::post('/del-order', [ApiController::class, 'delOrder']);
+    Route::post('/show-cart', [ApiController::class, 'showCart']);
+
     Route::group(['middleware' => 'auth:sanctum'], function (){
         Route::get('/user', [AuthController::class, 'user']);
     });

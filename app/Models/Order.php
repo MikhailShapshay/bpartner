@@ -23,4 +23,9 @@ class Order extends Model
     {
         return $this->belongsTo(Cart::class, 'cart_id', 'id');
     }
+
+    public function products()
+    {
+        return $this->hasOne(Product::class, 'id', 'product_id');
+    }
 }
